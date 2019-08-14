@@ -78,10 +78,9 @@ def append_searched(line):
 def read__searched():
     if os.path.isfile(searched_history_file):
         with open(searched_history_file, 'r', encoding='utf-8') as file:
-            return [l.strip for l in file.readlines()]
+            return [l.strip() for l in file.readlines()]
     else:
-        data = []
-    return data
+        return []
 
 
 if __name__ == "__main__":
