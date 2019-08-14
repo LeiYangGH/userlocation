@@ -1,8 +1,13 @@
 # coding: utf-8
+import pickle
+
 import requests, re, time
 from bs4 import BeautifulSoup
 from random import randint
+
+import os
 from requests.adapters import HTTPAdapter
+from usercity import extract_user_city
 
 request_retry = HTTPAdapter(max_retries=2)  # 增加重连次
 
@@ -61,7 +66,28 @@ def get_lon_lat(user, search_loc):
     return True
 
 
+already_searched_lines = []
+searched_history_file = r'output_searched'
+
+
+def append_searched(line):
+    with open(searched_history_file, 'a', encoding='utf-8') as file:
+        file.write((line + "\n"))
+
+
+def read__searched():
+    if os.path.isfile(searched_history_file):
+        with open(searched_history_file, 'r', encoding='utf-8') as file:
+            return [l.strip for l in file.readlines()]
+    else:
+        data = []
+    return data
+
+
 if __name__ == "__main__":
+    extract_user_city()
+    already_searched_lines = read__searched()
+    print(len(already_searched_lines))
     keyword = 'output'
     # keyword = "tmp"
     with open('user.location', "r", encoding="utf-8") as fr:
@@ -76,12 +102,18 @@ if __name__ == "__main__":
         if line == "":
             continue
         line = line.strip()
+        if line in already_searched_lines:
+            print('skip the line because already searched.')
+            continue
+        already_searched_lines.append(line)
+        append_searched(line)
+
         # user = line[0:line.index(",")]
         splitbyspaces = line.split()
         if not splitbyspaces:
             continue
         user = splitbyspaces[0]
-        exceptuser = line.replace(user,'').strip()
+        exceptuser = line.replace(user, '').strip()
         if ',' in exceptuser:
             search_loc = exceptuser.split(',')[0].strip()
         else:
