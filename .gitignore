@@ -102,3 +102,8 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+users_trial.info
+user.location
+.idea/
+*~
+*swp
